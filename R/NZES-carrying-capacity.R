@@ -41,45 +41,5 @@ nzes.carrying.m1 <- function(luc, elev, soilt=NULL, aspect180, vpdjan = NULL, me
               luc2 +
               (vpdjan * 0.0085309))
   
-  return(cc)
-}
-
-nzes.carrying.m2 <- function(luc, slope, solar = NULL, vpdann = NULL, vpdjan = NULL, meanT, precip, latitude){
-  
-  # Empirical corrections where data are missing
-  if(is.null(vpdann)){
-    vpdann <- 13.484359 + (precip * -0.001526) + 
-      (meant * 3.616275) + (meant * precip * -0.000353)
-  }
-  
-  if(is.null(vpdjan)){
-    vpdjan <- 29.352599 + (precip * -0.004510) + 
-      (meant * 4.456375) + (meant * precip * -0.000388)
-  }
-  
-  if(is.null(solar)){
-    solar <- 377.415320
- + (precip * -0.037518) + 
-      (meant * 1.400929) + 
-      (latitude * 5.406675) +
-      (meant * precip * -0.000041) +
-    (latitude * precip * -0.000821) +
-      (meant * latitude * 0.033392)
-  }
-  
-  # Lookup table for LUC
-  lt<-cbind(c(1:8),
-            c(0,0,0,-0.457559805, -0.027060915, -0.810075484, -1.49966985, -4.017955247))
-  
-  luc2<- reclassify(luc, lt)
-  
-  # Equation
-  cc <- exp(-5.971040435 + 
-              (slope * 0.017525954) + 
-              luc2 +
-              (vpdjan * 0.046918408) + 
-              (vpdann * -0.098763683) + 
-              (solar * 0.043276909))
-  
-  return(cc)
+  cc
 }

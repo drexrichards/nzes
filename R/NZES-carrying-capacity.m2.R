@@ -52,5 +52,5 @@ nzes.carrying.m2 <- function(luc, slope, solar = NULL, vpdann = NULL, vpdjan = N
               (vpdann * -0.098763683) + 
               (solar * 0.043276909))
   
-  return(cc)
+  cc
 }
