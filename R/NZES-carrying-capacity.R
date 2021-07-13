@@ -32,7 +32,7 @@ nzes.carrying.m1 <- function(luc, elev, soilt=NULL, aspect180, vpdjan = NULL, me
   lt<-cbind(c(1:8),
         c(0,0,-0.6819865, -1.0584458, -1.5318441, -2.0197741, -2.6343372, -4.9307393))
   
-  luc2<- reclassify(luc, lt)
+  luc2<- raster::reclassify(luc, lt)
   
   # Equation
   cc <- exp(1.4899984 + (elev * -0.0006978)+

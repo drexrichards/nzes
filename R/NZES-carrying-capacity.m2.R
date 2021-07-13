@@ -42,7 +42,7 @@ nzes.carrying.m2 <- function(luc, slope, solar = NULL, vpdann = NULL, vpdjan = N
   lt<-cbind(c(1:8),
             c(0,0,0,-0.457559805, -0.027060915, -0.810075484, -1.49966985, -4.017955247))
   
-  luc2<- reclassify(luc, lt)
+  luc2<- raster::reclassify(luc, lt)
   
   # Equation
   cc <- exp(-5.971040435 + 
