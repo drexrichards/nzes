@@ -10,7 +10,7 @@ nzes.carrying.m2(
   solar = NA,
   vpdann = NA,
   vpdjan = NA,
-  meanT,
+  meant,
   precip,
   latitude
 )
@@ -26,6 +26,8 @@ nzes.carrying.m2(
 
 \item{vpdjan}{Optional. Mean vapour pressure deficit in January}
 
+\item{meant}{Mean annual air temperature}
+
 \item{precip}{Total annual precipitation}
 
 \item{latitude}{Latitude from WGS as a raster}
@@ -35,8 +37,6 @@ nzes.carrying.m2(
 \item{soilt}{Optional. Mean annual soil temperature in degrees C}
 
 \item{aspect180}{Value in degrees from 0 to 180. North is 0, south is 180. East or west are 90. Flat areas with a slope less than 7degrees have aspect 180 =0}
-
-\item{meant}{Mean annual air temperature}
 }
 \value{
 Raster indicating modelled potential basic carrying capacity

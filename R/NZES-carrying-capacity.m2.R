@@ -29,8 +29,8 @@ nzes.carrying.m2 <- function(luc, slope, solar = NA, vpdann = NA, vpdjan = NA, m
   }
   
   if(is.na(solar)){
-    solar <- 377.415320
-    + (precip * -0.037518) + 
+    solar <- 377.415320+
+     (precip * -0.037518) + 
       (meant * 1.400929) + 
       (latitude * 5.406675) +
       (meant * precip * -0.000041) +

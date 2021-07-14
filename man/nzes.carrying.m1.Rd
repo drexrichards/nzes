@@ -4,7 +4,7 @@
 \alias{nzes.carrying.m1}
 \title{Modelling of stock basic carrying capacity by crown equations}
 \usage{
-nzes.carrying.m1(luc, elev, soilt = NA, aspect180, vpdjan = NA, meanT, precip)
+nzes.carrying.m1(luc, elev, soilt = NA, aspect180, vpdjan = NA, meant, precip)
 }
 \arguments{
 \item{luc}{Land use capability index. Integer, values 1-8}
@@ -17,9 +17,9 @@ nzes.carrying.m1(luc, elev, soilt = NA, aspect180, vpdjan = NA, meanT, precip)
 
 \item{vpdjan}{Optional. Mean vapour pressure deficit in January}
 
-\item{precip}{Total annual precipitation}
-
 \item{meant}{Mean annual air temperature}
+
+\item{precip}{Total annual precipitation}
 
 \item{solar}{Optional. Total solar radiation in W per m2}
 
