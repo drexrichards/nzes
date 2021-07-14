@@ -15,20 +15,20 @@
 #' @return Raster indicating modelled potential basic carrying capacity
 #' @export
 
-nzes.carrying.m2 <- function(luc, slope, solar = NULL, vpdann = NULL, vpdjan = NULL, meanT, precip, latitude){
+nzes.carrying.m2 <- function(luc, slope, solar = NA, vpdann = NA, vpdjan = NA, meant, precip, latitude){
   
   # Empirical corrections where data are missing
-  if(is.null(vpdann)){
+  if(is.na(vpdann)){
     vpdann <- 13.484359 + (precip * -0.001526) + 
       (meant * 3.616275) + (meant * precip * -0.000353)
   }
   
-  if(is.null(vpdjan)){
+  if(is.na(vpdjan)){
     vpdjan <- 29.352599 + (precip * -0.004510) + 
       (meant * 4.456375) + (meant * precip * -0.000388)
   }
   
-  if(is.null(solar)){
+  if(is.na(solar)){
     solar <- 377.415320
     + (precip * -0.037518) + 
       (meant * 1.400929) + 

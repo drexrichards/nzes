@@ -7,9 +7,9 @@
 nzes.carrying.m2(
   luc,
   slope,
-  solar = NULL,
-  vpdann = NULL,
-  vpdjan = NULL,
+  solar = NA,
+  vpdann = NA,
+  vpdjan = NA,
   meanT,
   precip,
   latitude

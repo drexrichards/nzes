@@ -4,15 +4,7 @@
 \alias{nzes.carrying.m1}
 \title{Modelling of stock basic carrying capacity by crown equations}
 \usage{
-nzes.carrying.m1(
-  luc,
-  elev,
-  soilt = NULL,
-  aspect180,
-  vpdjan = NULL,
-  meanT,
-  precip
-)
+nzes.carrying.m1(luc, elev, soilt = NA, aspect180, vpdjan = NA, meanT, precip)
 }
 \arguments{
 \item{luc}{Land use capability index. Integer, values 1-8}

@@ -15,15 +15,15 @@
 #' @return Raster indicating modelled potential basic carrying capacity
 #' @export
 
-nzes.carrying.m1 <- function(luc, elev, soilt=NULL, aspect180, vpdjan = NULL, meanT, precip){
+nzes.carrying.m1 <- function(luc, elev, soilt=NA, aspect180, vpdjan=NA, meant, precip){
   
   # Empirical corrections where data are missing
-  if(is.null(soilt)){
+  if(is.na(soilt)){
     soilt <- -25.444250 + (precip * 0.002355) + 
       (meant * 14.854373) + (meant * precip * -0.000797)
   }
   
-  if(is.null(vpdjan)){
+  if(is.na(vpdjan)){
     vpdjan <- 29.352599 + (precip * -0.004510) + 
       (meant * 4.456375) + (meant * precip * -0.000388)
   }
