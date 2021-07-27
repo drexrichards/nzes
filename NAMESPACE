@@ -2,4 +2,6 @@
 
 export(nzes.carrying.m1)
 export(nzes.carrying.m2)
+export(nzes.crop)
+export(nzes.lookup)
 export(soilerosion.model)
