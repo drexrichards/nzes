@@ -117,6 +117,6 @@ nzes.crop<- function(crop,
   o3<- (o1+o2) ==2
   o3i<- (o1i+o2) ==2
   
-  stack(o3, o3i)
+  raster::stack(o3, o3i)
   
 }
