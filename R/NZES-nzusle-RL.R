@@ -21,8 +21,8 @@ nzes.nzusle.rl<- function(topo,
   
   # Z - slope factor
   # convert slope from angle to grade
-  esSlope <- raster::terrain(topo, "slope",unit="degrees", neighbours=8)
-eZ<- 0.065 + ( 4.56 * ( {esSlope} / 100 ) ) + ( 65.41 * ({esSlope} / 100 ) ^ 2 )
+ # esSlope <- raster::terrain(topo, "slope",unit="degrees", neighbours=8)
+#eZ<- 0.065 + ( 4.56 * ( {esSlope} / 100 ) ) + ( 65.41 * ({esSlope} / 100 ) ^ 2 )
 
   
   
@@ -38,14 +38,34 @@ wbt_flow_accumulation_full_workflow( dem=paste(tmpdir, "dem.tif", sep = "") ,
                                      wd = NULL,
                                      verbose_mode = T)
 
-eL<-raster::raster(paste(tmpdir,"out_accum.tif",sep=""))
 
-ar<-raster::area(eL)
-eL<- sqrt(eL)*
-  ((raster::cellStats(ar,mean))*1000000)/ pi
-eL[eL>305]<-305
-eL<-eL/22
-eL<- eL^0.5
+wbt_slope(
+  dem=paste(tmpdir, "dem.tif", sep = "") , 
+  output = paste(tmpdir,"out_slope.tif",sep=""), 
+  zfactor=NULL, 
+  units="degrees"
+)
+
+
+wbt_sediment_transport_index(
+  sca=paste(tmpdir, "out_accum.tif", sep = ""),
+  slope=paste(tmpdir,"out_slope.tif",sep=""),
+  output=paste(tmpdir,"out_ls.tif",sep=""),
+  sca_exponent = 0.4,
+  slope_exponent = 1.3,
+  wd = NULL,
+  verbose_mode = FALSE)
+
+ eLS<-raster::raster(paste(tmpdir,"out_ls.tif",sep=""))
+# 
+# ar<-raster::area(eL)
+# eL<- sqrt(eL)*
+#   ((raster::cellStats(ar,mean))*1000000)/ pi
+# eL[eL>305]<-305
+# eL<-eL/22
+# eL<- eL^0.5
+
+
 
   
   # eR - rainfall erosivity
@@ -56,14 +76,14 @@ eL<- eL^0.5
   # eU - vegetation cover factor
  
   # Es (x,y) =  Î±P2 (x,y) K (x,y) L (x,y) Z (x,y) U (x,y)
-  esSoilLoss <- 0.0012*eR*eK*eL*eZ*eU # This is what the Guerra et al model calls "A" or actual soil loss
-  esSI <- eR*eK*eL*eZ # This is what the Guerra et al model calls "SI" or soil loss that would happen without vegetation
+  esSoilLoss <- 0.0012*eR*eK*eLS*eU # This is what the Guerra et al model calls "A" or actual soil loss
+  esSI <- 0.0012*eR*eK*eLS # This is what the Guerra et al model calls "SI" or soil loss that would happen without vegetation
   esSoilES <- (esSI - esSoilLoss)/ esSI
   
   ra<- raster::stack(esSoilLoss,
                 esSI,
                 esSoilES,
-                eL)
+                eLS)
   #names(ra)<-c("A","SI","erosionES")
   ra
 }

@@ -54,7 +54,7 @@ nzes.nzusle<- function(topo,
 
   # need to convert to m from map units
   tr<- raster::raster(paste(tmpdir,"out_slopelength.tif",sep=""))
-  ar<-area(tr)
+  ar<-raster::area(tr)
   eL<-tr *((1/mean(raster::res(tr))) *sqrt(raster::cellStats(ar,mean)))*1000 
   rm(tr)
   rm(ar)
