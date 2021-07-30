@@ -24,7 +24,7 @@ nzes.pollination(
 
 \item{nectarlt}{Lookup table of nectar production kgha-1 per 12 months}
 
-\item{pollendemand}{Vector of pollen demand per month kg}
+\item{pollendemand}{Vector of pollen demand per month kg. Must have one named value of "September"}
 
 \item{pollenrange}{Vector of pollen travel distance per month km}
 
@@ -33,7 +33,7 @@ nzes.pollination(
 \item{nectardemand}{Annual nectar requirement kg}
 }
 \value{
-Raster layer indicating the annual carrying capacity in colonies per pixel
+Raster stack indicating the annual carrying capacity in colonies per pixel. Layer 1 is the more conservative estimate using all months  pollen to constrain. Layer 2 is using September as per Ausseil et al
 }
 \description{
 This function models floral resources for honey bee pollinators, following Ausseil et al. 2018 Ecological Applications
