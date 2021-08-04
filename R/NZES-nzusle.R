@@ -27,14 +27,14 @@ nzes.nzusle<- function(topo,
   esSlope1<-esSlope # this one is for m factor calculation
   
   
-  wbt_slope(
+  whitebox::wbt_slope(
     dem=paste(tmpdir, "dem.tif", sep = "") , 
     output = paste(tmpdir,"out_slope.tif",sep=""), 
     zfactor=NULL, 
     units="percent"
   )
   
-  eZ<-raster(paste(tmpdir,"out_slope.tif",sep=""))
+  eZ<-raster::raster(paste(tmpdir,"out_slope.tif",sep=""))
   eZ<- eZ/100
   eZ<- 0.065+(4.56 * eZ)+(65.41 *(eZ^2))
   
@@ -57,7 +57,7 @@ nzes.nzusle<- function(topo,
   ar<-raster::area(tr)
   eL<-tr *((1/mean(raster::res(tr))) *sqrt(raster::cellStats(ar,mean)))*1000 
   rm(tr)
-  rm(ar)
+  #rm(ar)
   
   # Remove slope lengths of 0, they are about half a cell following Barriuso-Mediavilla et al. 2017 and Bolton et al 1995
   eL[eL==0]<- (sqrt(raster::cellStats(ar,mean))*1000  /2)

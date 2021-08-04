@@ -27,7 +27,7 @@ nzes.nzusle.rl<- function(topo,
   
   
   # L factor
-wbt_flow_accumulation_full_workflow( dem=paste(tmpdir, "dem.tif", sep = "") , 
+  whitebox::wbt_flow_accumulation_full_workflow( dem=paste(tmpdir, "dem.tif", sep = "") , 
                                      out_dem = paste(tmpdir,"out_dem.tif",sep=""),
                                      out_pntr = paste(tmpdir,"out_pntr.tif",sep=""),
                                      out_accum = paste(tmpdir,"out_accum.tif",sep=""),
@@ -39,7 +39,7 @@ wbt_flow_accumulation_full_workflow( dem=paste(tmpdir, "dem.tif", sep = "") ,
                                      verbose_mode = T)
 
 
-wbt_slope(
+whitebox::wbt_slope(
   dem=paste(tmpdir, "dem.tif", sep = "") , 
   output = paste(tmpdir,"out_slope.tif",sep=""), 
   zfactor=NULL, 
@@ -47,7 +47,7 @@ wbt_slope(
 )
 
 
-wbt_sediment_transport_index(
+whitebox::wbt_sediment_transport_index(
   sca=paste(tmpdir, "out_accum.tif", sep = ""),
   slope=paste(tmpdir,"out_slope.tif",sep=""),
   output=paste(tmpdir,"out_ls.tif",sep=""),
