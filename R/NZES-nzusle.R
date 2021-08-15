@@ -16,15 +16,13 @@ nzes.nzusle<- function(topo,
   # Generate temporary directory for whitebox
   tmpdir<- tempdir()
   raster::writeRaster(topo, 
-              paste(tmpdir, "dem.tif", sep = ""), overwrite=T,
-              datatype='INT2S')
+                      paste(tmpdir, "dem.tif", sep = ""), overwrite=T,
+                      datatype='INT2S')
   
   # Z - slope factor
   # convert slope from angle to grade
   esSlope <- raster::terrain(topo, "slope",unit="degrees", neighbours=8)
-  # Cut to max 50% , following EU # https://esdac.jrc.ec.europa.eu/themes/slope-length-and-steepness-factor-ls-factor
-  # 50% slope is 26.57 degrees
-  esSlope1<-esSlope # this one is for m factor calculation
+  esSlope1<-esSlope # this one is for m factor calculation so don't cut to 50%
   
   
   whitebox::wbt_slope(
@@ -34,8 +32,12 @@ nzes.nzusle<- function(topo,
     units="percent"
   )
   
+  # This is the slope in %
   eZ<-raster::raster(paste(tmpdir,"out_slope.tif",sep=""))
   eZ<- eZ/100
+  eZ[eZ>0.5]<-0.5
+  # Cut to max 50% , following EU # https://esdac.jrc.ec.europa.eu/themes/slope-length-and-steepness-factor-ls-factor
+  # 50% slope is 26.57 degrees
   eZ<- 0.065+(4.56 * eZ)+(65.41 *(eZ^2))
   
   # LS factor
@@ -51,16 +53,20 @@ nzes.nzusle<- function(topo,
     output = paste(tmpdir,"out_slopelength.tif",sep="")
   )
   
-
+  
   # need to convert to m from map units
   tr<- raster::raster(paste(tmpdir,"out_slopelength.tif",sep=""))
   ar<-raster::area(tr)
-  eL<-tr *((1/mean(raster::res(tr))) *sqrt(raster::cellStats(ar,mean)))*1000 
+  # tr is the slope length in degrees (map uniots. Need to convert to km)
+  px<-mean(raster::res(tr))
+  mx<-sqrt(raster::cellStats(ar,mean))*1000 #
+  mx/px # conversion factor, number of m in one map unit
+  eL<-tr * (mx/px)
   rm(tr)
   #rm(ar)
   
   # Remove slope lengths of 0, they are about half a cell following Barriuso-Mediavilla et al. 2017 and Bolton et al 1995
-  eL[eL==0]<- (sqrt(raster::cellStats(ar,mean))*1000  /2)
+  eL[eL==0]<- mx/2
   # Constrain slope length to max 305 metres following Barriuso-Mediavilla et al. 2017 and Bolton et al 1995
   eL[eL>305]<-305
   eL<-(eL/22.13)
@@ -71,6 +77,7 @@ nzes.nzusle<- function(topo,
   # 0.3 for slopes between 1%–3%
   #0.2 for slopes less than 1%. 0.6 degrees
   
+  # This is the degrees version
   em<- esSlope1
   em[,]<-0.5
   em[eZ< 2.86]<-0.4
@@ -80,20 +87,20 @@ nzes.nzusle<- function(topo,
   eL <- eL^em
   
   # eR - rainfall erosivity
-  eR <- (eR^2) 
+  eR <- (eR^1.7) #1.7was made following the most conservative in dymond et al referring to hicks et al 1996
   
   # eK - soil erodibility factor
   
   # eU - vegetation cover factor
- 
+  
   # Es (x,y) =  Î±P2 (x,y) K (x,y) L (x,y) Z (x,y) U (x,y)
   esSoilLoss <- 0.0012*eR*eK*eL*eZ*eU # This is what the Guerra et al model calls "A" or actual soil loss
   esSI <- 0.0012*eR*eK*eL*eZ # This is what the Guerra et al model calls "SI" or soil loss that would happen without vegetation
   esSoilES <- (esSI - esSoilLoss)/ esSI
   
   ra<- raster::stack(esSoilLoss,
-                esSI,
-                esSoilES)
-  #names(ra)<-c("A","SI","erosionES")
+                     esSI,
+                     esSoilES)
+  names(ra)<-c("A","SI","erosionES")
   ra
 }
