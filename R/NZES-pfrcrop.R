@@ -3,7 +3,6 @@
 #' This function models suitability for 6 crops under irrigated and non irrigated situations
 #' @param tmax List ot stacked rasters of max daily temperature. Each stack 1 year
 #' @param tmin List ot stacked rasters of min daily temperature. Each stack 1 year
-#' @param rad List ot stacked rasters of daily radiation. Each stack 1 year
 #' @param precip List ot stacked rasters of daily precip. Each stack 1 year
 #' @param soils Stack of soil parameters including NAMED LAYERS; drainclass, ph, prd, slope, paw, salinity, clay, 
 #' @param croprules Table containing the crop rules. This is very specific and designed to make this function unusable without permission to use the dataset from PFR
@@ -12,18 +11,17 @@
 
 nzes.pfrcrop<- function(tmax, 
          tmin,
-         rad,
          precip,
          soils, 
          croprules){
   
-  tda <- (tmax + tmin)/2
+  
   
   # split into years
   spltyr<- function(stk){
     
-    yi<- rbind(seq(from = 1, to = nlayers(stk), length.out=  ceiling(nlayers(stk)/365)),
-               seq(from = 1, to = nlayers(stk), length.out=  ceiling(nlayers(stk)/365))-1)
+    yi<- rbind(seq(from = 1, to = raster::nlayers(stk), length.out=  ceiling(raster::nlayers(stk)/365)),
+               seq(from = 1, to = raster::nlayers(stk), length.out=  ceiling(raster::nlayers(stk)/365))-1)
     yi[2, 1:(ncol(yi)-1)] <-  yi[2, 2:ncol(yi)]
     yi<-yi[,1:(ncol(yi)-1)]
     
@@ -37,9 +35,9 @@ nzes.pfrcrop<- function(tmax,
   
   tmax<-spltyr(tmax)
   tmin<-spltyr(tmin)
-  rad<-spltyr(rad)
+  #rad<-spltyr(rad)
   precip<-spltyr(precip)
-  tda<-spltyr(tda)
+  #tda<-spltyr(tda)
   
   
   
@@ -53,13 +51,15 @@ nzes.pfrcrop<- function(tmax,
   for(j in 1:length(precip)){
     p1[[j]]<- sum(precip[[j]])  }
   p1 <-do.call(mean, p1)
+  pann<-p1
   
   # winter chill hours 0-7 deg between april and august
-  p2<-tda
+  p2<-tmin
+  tda<-(tmax[[j]] + tmin[[j]])/2
   for(j in 1:length(precip)){
     
-    dcha<- (12 * (7-tmin[[j]]))/(tda[[j]]-tmin[[j]])
-    dchb<- (12 * (0-tmin[[j]]))/(tda[[j]]-tmin[[j]])
+    dcha<- (12 * (7-tmin[[j]]))/(tda-tmin[[j]])
+    dchb<- (12 * (0-tmin[[j]]))/(tda-tmin[[j]])
     
     dcha[tmax[[j]] <= 7]<-24
     dchb[tmin[[j]] >=0]<-0
@@ -128,7 +128,7 @@ nzes.pfrcrop<- function(tmax,
     
     matg<-matg[!duplicated(matg[,1:2]),]
     
-    rasg2<-reclassify(rasg,
+    rasg2<-raster::reclassify(rasg,
                       matg)
     rasg2
   }
@@ -156,7 +156,7 @@ nzes.pfrcrop<- function(tmax,
     rasg2
   }
   
-  limitsoil<- stack(classras(soils$drainclass,
+  limitsoil<- raster::stack(classras(soils$drainclass,
                              cr[cr$parameter == "drainageclass",c(4,5,6)] ),
                     phras(soils$ph,
                           cr[cr$parameter == "ph",c(4,5,6)] ),
@@ -168,7 +168,7 @@ nzes.pfrcrop<- function(tmax,
   limitsoil[limitsoil==0]<-4
   
   
-  limitclim <- stack(classras(p1,
+  limitclim <- raster::stack(classras(p1,
                               cr[cr$parameter == "annualrainfall",c(4,5,6)] ),
                      classras(p2,
                               cr[cr$parameter == "winterchillhours0-7",c(4,5,6)] ),
@@ -182,11 +182,11 @@ nzes.pfrcrop<- function(tmax,
   chestnutirri <- min(limitclim[[2:4]])
   chestnutnat <- min(limitclim)
   
-  chestnutirri<-resample(chestnutirri,limitsoil,"ngb")
-  chestnutnat<-resample(chestnutnat,limitsoil, "ngb")
+  chestnutirri<-raster::resample(chestnutirri,limitsoil,"ngb")
+  chestnutnat<-raster::resample(chestnutnat,limitsoil, "ngb")
   
-  chestnutirri <- min(stack(chestnutirri, limitsoil))
-  chestnutnat <- min(stack(chestnutnat, limitsoil))
+  chestnutirri <- min(raster::stack(chestnutirri, limitsoil))
+  chestnutnat <- min(raster::stack(chestnutnat, limitsoil))
   
   
   #### 2. Honey/ manuka ####
@@ -249,7 +249,7 @@ nzes.pfrcrop<- function(tmax,
   names(limitsoil)<- c("paw")
   
   
-  limitclim <- stack(classras(p1,
+  limitclim <- raster::stack(classras(p1,
                               cr[cr$parameter == "wintermeanmint",c(4,5,6)] ),
                      classras(p2,
                               cr[cr$parameter == "summermeantmax",c(4,5,6)] ),
@@ -263,10 +263,10 @@ nzes.pfrcrop<- function(tmax,
   manukanat <- min(limitclim)
   
   #manukairri<-resample(manukairri,limitsoil,"ngb")
-  manukanat<-resample(manukanat,limitsoil, "ngb")
+  manukanat<-raster::resample(manukanat,limitsoil, "ngb")
   
   # manukairri <- min(stack(manukairri, limitsoil))
-  manukanat <- min(stack(manukanat, limitsoil))
+  manukanat <- min(raster::stack(manukanat, limitsoil))
   
   
   #### 3. Onions ####
@@ -316,7 +316,7 @@ nzes.pfrcrop<- function(tmax,
     fg<-fg[[c(1:90)]]
     fg<-fg>10
     
-    fg<- calc(fg, function(x){
+    fg<- raster::calc(fg, function(x){
       x2<-rle(x)
       x2<- x2$values[x2$lengths>3]
       x2<-x2[x2==1]
@@ -335,7 +335,7 @@ nzes.pfrcrop<- function(tmax,
   #soils$prd
   #soils$slop
   
-  limitsoil<- stack(classras(soils$drainclass,
+  limitsoil<- raster::stack(classras(soils$drainclass,
                              cr[cr$parameter == "drainageclass",c(4,5,6)] ),
                     classras(soils$salinity,
                              cr[cr$parameter == "salinity",c(4,5,6)] ),
@@ -350,7 +350,7 @@ nzes.pfrcrop<- function(tmax,
   limitsoil<-round(limitsoil,0)
   
   
-  limitclim <- stack(classras(p1,
+  limitclim <- raster::stack(classras(p1,
                               cr[cr$parameter == "springfrostprob",c(4,5,6)] ),
                      classras(p2,
                               cr[cr$parameter == "heatharvestprob",c(4,5,6)] ),
@@ -365,7 +365,7 @@ nzes.pfrcrop<- function(tmax,
   onionnat <- min(limitclim)
   
   #onionirri<-resample(onionirri,limitsoil,"ngb")
-  onionnat<-resample(onionnat,limitsoil, "ngb")
+  onionnat<-raster::resample(onionnat,limitsoil, "ngb")
   
   #onionirri <- min(stack(onionirri, limitsoil))
   onionnat <- min(stack(onionnat, limitsoil))
@@ -378,10 +378,7 @@ nzes.pfrcrop<- function(tmax,
   # weather related first
   # weather related first
   # annual precip
-  p1<-precip
-  for(j in 1:length(precip)){
-    p1[[j]]<- sum(precip[[j]])  }
-  p1 <-do.call(mean, p1)
+  p1<-pann
   
   # spring frosts
   p2<-tmin
@@ -399,7 +396,7 @@ nzes.pfrcrop<- function(tmax,
   p3<-tda
   for(j in 1:length(precip)){
     
-    fg<-tda[[j]]
+    fg<-tda
     fg<-fg[[c(1:120 , 244:365)]]
     fg<-fg-3
     
@@ -432,7 +429,7 @@ nzes.pfrcrop<- function(tmax,
   #soils$prd
   #soils$slop
   
-  limitsoil<- stack(classras(soils$drainclass,
+  limitsoil<- raster::stack(classras(soils$drainclass,
                              cr[cr$parameter == "drainageclass",c(4,5,6)] ),
                     
                     phras(soils$ph,
@@ -443,7 +440,7 @@ nzes.pfrcrop<- function(tmax,
   names(limitsoil)<- c("drainclass","ph","slope")
   limitsoil[limitsoil==0]<-4
   
-  limitclim <- stack(classras(p1,
+  limitclim <- raster::stack(classras(p1,
                               cr[cr$parameter == "precip",c(4,5,6)] ),
                      classras(p1,
                               cr[cr$parameter == "precip2",c(4,5,6)] ),
@@ -461,11 +458,11 @@ nzes.pfrcrop<- function(tmax,
   peairri <- min(limitclim[[2:5]])# irrigation does not account for min precip, but ca nstipp be overwatered
   peanat <- min(limitclim)
   
-  peairri<-resample(peairri,limitsoil,"ngb")
-  peanat<-resample(peanat,limitsoil, "ngb")
+  peairri<-raster::resample(peairri,limitsoil,"ngb")
+  peanat<-raster::resample(peanat,limitsoil, "ngb")
   
-  peairri <- min(stack(peairri, limitsoil))
-  peanat <- min(stack(peanat, limitsoil))
+  peairri <- min(raster::stack(peairri, limitsoil))
+  peanat <- min(raster::stack(peanat, limitsoil))
   
   
   
@@ -475,10 +472,7 @@ nzes.pfrcrop<- function(tmax,
   
   # weather related first
   # annual precip
-  p1<-precip
-  for(j in 1:length(precip)){
-    p1[[j]]<- sum(precip[[j]])  }
-  p1 <-do.call(mean, p1)
+  p1<-pann
   
   # low temp nov to feb
   p2<-tmin
@@ -510,7 +504,7 @@ nzes.pfrcrop<- function(tmax,
   #soils$prd
   #soils$slop
   
-  limitsoil<- stack(classras(soils$clay,
+  limitsoil<- raster::stack(classras(soils$clay,
                              cr[cr$parameter == "soilclaycontent",c(4,5,6)] ),
                     
                     classras(soils$salinity,
@@ -527,7 +521,7 @@ nzes.pfrcrop<- function(tmax,
   
   
   
-  limitclim <- stack(classras(p1,
+  limitclim <- raster::stack(classras(p1,
                               cr[cr$parameter == "precip",c(4,5,6)] ),
                      classras(p1,
                               cr[cr$parameter == "precip2",c(4,5,6)] ),
@@ -544,11 +538,11 @@ nzes.pfrcrop<- function(tmax,
   potatoirri <- min(limitclim[[2:4]])
   potatonat <- min(limitclim)
   
-  potatoirri<-resample(potatoirri,limitsoil,"ngb")
-  potatonat<-resample(potatonat,limitsoil, "ngb")
+  potatoirri<-raster::resample(potatoirri,limitsoil,"ngb")
+  potatonat<-raster::resample(potatonat,limitsoil, "ngb")
   
-  potatoirri <- min(stack(potatoirri, limitsoil))
-  potatonat <- min(stack(potatonat, limitsoil))
+  potatoirri <- min(raster::stack(potatoirri, limitsoil))
+  potatonat <- min(raster::stack(potatonat, limitsoil))
   
   
   #### 6. Truffles ####
@@ -557,16 +551,13 @@ nzes.pfrcrop<- function(tmax,
   
   # weather related first
   # annual precip
-  p1<-precip
-  for(j in 1:length(precip)){
-    p1[[j]]<- sum(precip[[j]])  }
-  p1 <-do.call(mean, p1)
+  p1<-pann
   
   # average temp jan to march
   p2<-tda
   for(j in 1:length(precip)){
     
-    fg<-tda[[j]]
+    fg<-tda
     fg<-fg[[c(1,89)]]
     
     p2[[j]]<- mean(fg )
@@ -582,7 +573,7 @@ nzes.pfrcrop<- function(tmax,
   # }
   # p3 <-do.call(mean, p3)
   
-  limitsoil<- stack(classras(soils$drainclass,
+  limitsoil<- raster::stack(classras(soils$drainclass,
                              cr[cr$parameter == "drainageclass",c(4,5,6)] ),
                     phras(soils$ph,
                           cr[cr$parameter == "ph",c(4,5,6)] ),
@@ -594,7 +585,7 @@ nzes.pfrcrop<- function(tmax,
   
   
   
-  limitclim <- stack(classras(p1,
+  limitclim <- raster::stack(classras(p1,
                               cr[cr$parameter == "precip",c(4,5,6)] ),
                      classras(p1,
                               cr[cr$parameter == "precip2",c(4,5,6)] ),
@@ -609,15 +600,15 @@ nzes.pfrcrop<- function(tmax,
   trufflesirri <- limitclim[[3]]# irrigation does not account for min precip, but ca nstipp be overwatered
   trufflesnat <- min(limitclim)
   
-  trufflesirri<-resample(trufflesirri,limitsoil,"ngb")
-  trufflesnat<-resample(trufflesnat,limitsoil, "ngb")
+  trufflesirri<-raster::resample(trufflesirri,limitsoil,"ngb")
+  trufflesnat<-raster::resample(trufflesnat,limitsoil, "ngb")
   
-  trufflesirri <- min(stack(trufflesirri, limitsoil))
-  trufflesnat <- min(stack(trufflesnat, limitsoil))
+  trufflesirri <- min(raster::stack(trufflesirri, limitsoil))
+  trufflesnat <- min(raster::stack(trufflesnat, limitsoil))
   
   
   #### 7. Wrap outputs ####
-  ocro<-  stack(chestnutirri,
+  ocro<-  raster::stack(chestnutirri,
                 chestnutnat,
                 # manukairri,
                 manukanat,

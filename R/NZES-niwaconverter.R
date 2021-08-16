@@ -47,14 +47,14 @@ niwaconverter<-function(niwadd,
   # creat folder and save out
   dir.create(paste0(newdd,foldname))
   writeRaster(tmax,
-              paste0(newdd,foldname,"/tmax.tif"), overwrite =T)
+              paste0(newdd,foldname,"/tmax.tif"), overwrite =T, datatype= 'INT2S')
   writeRaster(tmin,
-              paste0(newdd,foldname,"/tmin.tif"), overwrite =T)
+              paste0(newdd,foldname,"/tmin.tif"), overwrite =T, datatype= 'INT2S')
   writeRaster(rad,
-              paste0(newdd,foldname,"/rad.tif"), overwrite =T)
+              paste0(newdd,foldname,"/rad.tif"), overwrite =T, datatype= 'INT2S')
   writeRaster(precip,
-              paste0(newdd,foldname,"/precip.tif"), overwrite =T)
+              paste0(newdd,foldname,"/precip.tif"), overwrite =T, datatype= 'INT2S')
   writeRaster(pet,
-              paste0(newdd,foldname,"/pet.tif"), overwrite =T)
+              paste0(newdd,foldname,"/pet.tif"), overwrite =T, datatype= 'INT2S')
   
 }

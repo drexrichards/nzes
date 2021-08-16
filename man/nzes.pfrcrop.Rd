@@ -4,14 +4,12 @@
 \alias{nzes.pfrcrop}
 \title{Crop suitability for 6 key crops based on rules developed by PFR}
 \usage{
-nzes.pfrcrop(tmax, tmin, rad, precip, soils, croprules)
+nzes.pfrcrop(tmax, tmin, precip, soils, croprules)
 }
 \arguments{
 \item{tmax}{List ot stacked rasters of max daily temperature. Each stack 1 year}
 
 \item{tmin}{List ot stacked rasters of min daily temperature. Each stack 1 year}
-
-\item{rad}{List ot stacked rasters of daily radiation. Each stack 1 year}
 
 \item{precip}{List ot stacked rasters of daily precip. Each stack 1 year}
 
