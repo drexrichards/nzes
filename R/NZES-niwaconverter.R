@@ -21,6 +21,7 @@ niwaconverter<-function(niwadd,
   tmin<- brick(paste0(niwadd, fl[grep("Min", fl)]))
   rad<- brick(paste0(niwadd, fl[grep("Rad", fl)]))
   precip<- brick(paste0(niwadd, fl[grep("Precip", fl)]))
+  pet<- brick(paste0(niwadd, fl[grep("PE_VCSN", fl)]))
   
   # temp units are in kelvin
   # precip in mm
@@ -40,6 +41,9 @@ niwaconverter<-function(niwadd,
   rad<-crop(rad, croparea)
   rad<-mask(rad, croparea)
   
+  pet<-crop(pet, croparea)
+  pet<-mask(pet, croparea)
+  
   # creat folder and save out
   dir.create(paste0(newdd,foldname))
   writeRaster(tmax,
@@ -50,5 +54,7 @@ niwaconverter<-function(niwadd,
               paste0(newdd,foldname,"/rad.tif"), overwrite =T)
   writeRaster(precip,
               paste0(newdd,foldname,"/precip.tif"), overwrite =T)
+  writeRaster(pet,
+              paste0(newdd,foldname,"/pet.tif"), overwrite =T)
   
 }

@@ -1,4 +1,4 @@
-#' Crop suitability for 6 key crops based on rules developed by PFR/ Jing Guo/ Anne-Gaell Ausseil
+#' Crop suitability for 6 key crops based on rules developed by PFR
 #'
 #' This function models suitability for 6 crops under irrigated and non irrigated situations
 #' @param tmax List ot stacked rasters of max daily temperature. Each stack 1 year
@@ -10,7 +10,7 @@
 #' @return Named raster stack with 10 layers. Not all crops are water limited, so they do not show irrigated/non difference
 #' @export
 
-function(tmax, 
+nzes.pfrcrop<- function(tmax, 
          tmin,
          rad,
          precip,
