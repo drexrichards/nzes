@@ -4,18 +4,16 @@
 \alias{nzes.pfrcrop}
 \title{Crop suitability for 6 key crops based on rules developed by PFR}
 \usage{
-nzes.pfrcrop(tmax, tmin, precip, soils, croprules)
+nzes.pfrcrop(niwadd, region, soils, croprules)
 }
 \arguments{
-\item{tmax}{List ot stacked rasters of max daily temperature. Each stack 1 year}
+\item{niwadd}{Folder for source NIWA netcdfs}
 
-\item{tmin}{List ot stacked rasters of min daily temperature. Each stack 1 year}
-
-\item{precip}{List ot stacked rasters of daily precip. Each stack 1 year}
+\item{region}{Cropping region as spatial polygons in wgs84}
 
 \item{soils}{Stack of soil parameters including NAMED LAYERS; drainclass, ph, prd, slope, paw, salinity, clay,}
 
-\item{croprules}{Table containing the crop rules. This is very specific and designed to make this function unusable without permission to use the dataset from PFR}
+\item{croprules}{Table containing the crop rules. This is very specific and designed to make this function unusable without permission to use the dataset from PFR. must have 6 columns with one named "sc" for suitability score}
 }
 \value{
 Named raster stack with 10 layers. Not all crops are water limited, so they do not show irrigated/non difference

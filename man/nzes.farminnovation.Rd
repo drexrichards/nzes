@@ -4,7 +4,7 @@
 \alias{nzes.farminnovation}
 \title{Farmer innovation from Brown et al 2016 LUP}
 \usage{
-nzes.farminnovation(agribase, region, srdmlookup)
+nzes.farminnovation(agribase, region, srdmlookup, luc)
 }
 \arguments{
 \item{agribase}{Spatial polygons dataframe from agribase including parameters}
@@ -13,10 +13,10 @@ nzes.farminnovation(agribase, region, srdmlookup)
 
 \item{srdmlookup}{Lookup table provided in package}
 
-\item{lcm}{Land cover map rasterised}
+\item{luc}{Land cover map (LUCAS) rasterised as an integer version e.g. 71000, etc.}
 }
 \value{
-Raster layer
+Raster layer with values between 0 and 10 indicating innovation index
 }
 \description{
 This function models suitability for 6 crops under irrigated and non irrigated situations

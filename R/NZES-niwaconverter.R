@@ -17,44 +17,44 @@ niwaconverter<-function(niwadd,
   
   # Netcdf dataset
   #tmax<- nc_open("C:/Users/RichardsD/Documents/Offline data/NIWA climate offline/NorRpast-2005/MaxTempCorr_VCSN_NorESM1-M_2001-2005_RCPpast.nc")
-  tmax<- brick(paste0(niwadd, fl[grep("Max", fl)]))
-  tmin<- brick(paste0(niwadd, fl[grep("Min", fl)]))
-  rad<- brick(paste0(niwadd, fl[grep("Rad", fl)]))
-  precip<- brick(paste0(niwadd, fl[grep("Precip", fl)]))
-  pet<- brick(paste0(niwadd, fl[grep("PE_VCSN", fl)]))
+  tmax<- raster::brick(paste0(niwadd, fl[grep("Max", fl)]))
+  tmin<- raster::brick(paste0(niwadd, fl[grep("Min", fl)]))
+  rad<- raster::brick(paste0(niwadd, fl[grep("Rad", fl)]))
+  precip<- raster::brick(paste0(niwadd, fl[grep("Precip", fl)]))
+  pet<- raster::brick(paste0(niwadd, fl[grep("PE_VCSN", fl)]))
   
   # temp units are in kelvin
   # precip in mm
   # radiation in w per m2
   
-  precip<-crop(precip, croparea)
-  precip<-mask(precip, croparea)
+  precip<-raster::crop(precip, croparea)
+  precip<-raster::mask(precip, croparea)
   
-  tmax<-crop(tmax, croparea)
-  tmax<-mask(tmax, croparea)
+  tmax<-raster::crop(tmax, croparea)
+  tmax<-raster::mask(tmax, croparea)
   tmax<- tmax + -272.15
   
-  tmin<-crop(tmin, croparea)
-  tmin<-mask(tmin, croparea)
+  tmin<-raster::crop(tmin, croparea)
+  tmin<-raster::mask(tmin, croparea)
   tmin<-tmin+ -272.15
   
-  rad<-crop(rad, croparea)
-  rad<-mask(rad, croparea)
+  rad<-raster::crop(rad, croparea)
+  rad<-raster::mask(rad, croparea)
   
-  pet<-crop(pet, croparea)
-  pet<-mask(pet, croparea)
+  pet<-raster::crop(pet, croparea)
+  pet<-raster::mask(pet, croparea)
   
   # creat folder and save out
   dir.create(paste0(newdd,foldname))
-  writeRaster(tmax,
-              paste0(newdd,foldname,"/tmax.tif"), overwrite =T, datatype= 'INT2S')
-  writeRaster(tmin,
-              paste0(newdd,foldname,"/tmin.tif"), overwrite =T, datatype= 'INT2S')
-  writeRaster(rad,
-              paste0(newdd,foldname,"/rad.tif"), overwrite =T, datatype= 'INT2S')
-  writeRaster(precip,
-              paste0(newdd,foldname,"/precip.tif"), overwrite =T, datatype= 'INT2S')
-  writeRaster(pet,
-              paste0(newdd,foldname,"/pet.tif"), overwrite =T, datatype= 'INT2S')
+  raster::writeRaster(tmax,
+              paste0(newdd,foldname,"/tmax.nc"), overwrite =T,varname="time2", format="CDF")
+  raster::writeRaster(tmin,
+              paste0(newdd,foldname,"/tmin.nc"), overwrite =T,varname="time2", format="CDF")
+  raster::writeRaster(rad,
+              paste0(newdd,foldname,"/rad.nc"), overwrite =T,varname="time2", format="CDF")
+  raster::writeRaster(precip,
+              paste0(newdd,foldname,"/precip.nc"), overwrite =T,varname="time2", format="CDF")
+  raster::writeRaster(pet,
+              paste0(newdd,foldname,"/pet.nc"), overwrite =T,varname="time2", format="CDF")
   
 }

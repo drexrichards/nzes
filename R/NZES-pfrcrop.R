@@ -1,21 +1,33 @@
 #' Crop suitability for 6 key crops based on rules developed by PFR
 #'
 #' This function models suitability for 6 crops under irrigated and non irrigated situations
-#' @param tmax List ot stacked rasters of max daily temperature. Each stack 1 year
-#' @param tmin List ot stacked rasters of min daily temperature. Each stack 1 year
-#' @param precip List ot stacked rasters of daily precip. Each stack 1 year
+#' @param niwadd Folder for source NIWA netcdfs
+#' @param region Cropping region as spatial polygons in wgs84
 #' @param soils Stack of soil parameters including NAMED LAYERS; drainclass, ph, prd, slope, paw, salinity, clay, 
-#' @param croprules Table containing the crop rules. This is very specific and designed to make this function unusable without permission to use the dataset from PFR
+#' @param croprules Table containing the crop rules. This is very specific and designed to make this function unusable without permission to use the dataset from PFR. must have 6 columns with one named "sc" for suitability score
 #' @return Named raster stack with 10 layers. Not all crops are water limited, so they do not show irrigated/non difference
 #' @export
 
-nzes.pfrcrop<- function(tmax, 
-         tmin,
-         precip,
+nzes.pfrcrop<- function(niwadd,
+                        region,
          soils, 
          croprules){
   
+  fl<-list.files(niwadd)
   
+  tmax2<- raster::brick(paste0(niwadd, fl[grep("Max", fl)]))
+  tmin2<- raster::brick(paste0(niwadd, fl[grep("Min", fl)]))
+  precip2<- raster::brick(paste0(niwadd, fl[grep("Precip", fl)]))
+  precip2<-raster::crop(precip2, region)
+  precip2<-raster::mask(precip2, region)
+  
+  tmax2<-raster::crop(tmax2, region)
+  tmax2<-raster::mask(tmax2, region)
+  tmax2<- tmax2 + -272.15
+  
+  tmin2<-raster::crop(tmin2, region)
+  tmin2<-raster::mask(tmin2, region)
+  tmin2<-tmin2+ -272.15
   
   # split into years
   spltyr<- function(stk){
@@ -33,10 +45,10 @@ nzes.pfrcrop<- function(tmax,
     stk2
   }
   
-  tmax<-spltyr(tmax)
-  tmin<-spltyr(tmin)
+  tmax<-spltyr(tmax2)
+  tmin<-spltyr(tmin2)
   #rad<-spltyr(rad)
-  precip<-spltyr(precip)
+  precip<-spltyr(precip2)
   #tda<-spltyr(tda)
   
   
@@ -55,8 +67,10 @@ nzes.pfrcrop<- function(tmax,
   
   # winter chill hours 0-7 deg between april and august
   p2<-tmin
-  tda<-(tmax[[j]] + tmin[[j]])/2
+ 
   for(j in 1:length(precip)){
+    
+    tda<-(tmax[[j]] + tmin[[j]])/2
     
     dcha<- (12 * (7-tmin[[j]]))/(tda-tmin[[j]])
     dchb<- (12 * (0-tmin[[j]]))/(tda-tmin[[j]])
@@ -303,7 +317,7 @@ nzes.pfrcrop<- function(tmax,
       length(x2)>0
     })
     
-    fg<- sum(fg >0 & fg < 7)
+    fg<- (fg >0 & fg < 7)
     p2[[j]]<- fg 
   }
   p2 <-do.call(mean, p2)
@@ -393,10 +407,10 @@ nzes.pfrcrop<- function(tmax,
   p2 <-do.call(mean, p2)
   
   # growing degree days september to april
-  p3<-tda
+  p3<-precip
   for(j in 1:length(precip)){
     
-    fg<-tda
+    fg<- (tmax[[j]] + tmin[[j]])/2
     fg<-fg[[c(1:120 , 244:365)]]
     fg<-fg-3
     
@@ -494,7 +508,7 @@ nzes.pfrcrop<- function(tmax,
     fg<-fg[[c(1,60, 305, 365)]]
     
     fg<- max(fg >20) # change to max to calculate binary, sum to calculate number of events
-    p2[[j]]<- fg 
+    p3[[j]]<- fg 
   }
   p3 <-do.call(mean, p3)
   
@@ -554,10 +568,10 @@ nzes.pfrcrop<- function(tmax,
   p1<-pann
   
   # average temp jan to march
-  p2<-tda
+  p2<-tmax
   for(j in 1:length(precip)){
     
-    fg<-tda
+    fg<- (tmax[[j]] + tmin[[j]])/2
     fg<-fg[[c(1,89)]]
     
     p2[[j]]<- mean(fg )
