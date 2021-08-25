@@ -9,7 +9,7 @@
 #' @param pollenrange Vector of pollen travel distance per month km
 #' @param nectarrange Vector of nectar travel distance per month km
 #' @param nectardemand Annual nectar requirement kg
-#' @return Raster stack indicating the annual carrying capacity in colonies per pixel. Layer 1 is the more conservative estimate using all months  pollen to constrain. Layer 2 is using September as per Ausseil et al
+#' @return Raster stack indicating the annual carrying capacity in colonies per pixel and the annual pollinator density per cropped pixel. Layer 1+3 is the more conservative estimate using all months  pollen to constrain. Layer 2+4 is using September as per Ausseil et al
 #' @export
 
 nzes.pollination<- function(lcm,
@@ -117,8 +117,54 @@ nzes.pollination<- function(lcm,
     as.numeric(pollendemand$September)
   pr<- min(pr)
   
-  ra<- min(raster::stack(pr,nr))
+  ra<- min(raster::stack(pr,nr)) # ra is a more conservative cc, rb is that used by Ausseil et al
   rb<- min(raster::stack(prsept,nr))
+  
+  
+  ## The next step is to add a pollination es function
+  # apply a distance equal to the max foraging distance year-round
+  # this will be for nectar, as nectar foraging is always further
+  # highlight crops that will receive pollination services and the density
+  
+  # assume one hive has about 13000 field bees following Bodenheimer 1937
+  crops<- lcm
+  crops[,]<-0
+  crops[lcm == 30]<-1
+  crops[lcm==33]<-1
+  
+  polla<-ra
+  pollb<-rb
+  
+  #calculate number of pixels in focal buffer
+  ndist<- ceiling(nectarrange[i]/ ar)
+  ndist<- (floor(ndist/2)*2)+1
+  ndist<-as.numeric(ndist)
+  
+  # if 1 or less, no need to focal
+  if(ndist<2){
+    crops<-crops
+  }else{
+    ndist<- drawImage(matrix(0,ndist, ndist), ceiling(ndist/2), floor(ndist/2))
+    polla<- raster::focal(polla,
+                            ndist,
+                            sum,
+                            na.rm=TRUE,
+                            pad = TRUE,
+                            padValue = NA)
+    pollb<- raster::focal(pollb,
+                          ndist,
+                          sum,
+                          na.rm=TRUE,
+                          pad = TRUE,
+                          padValue = NA)
+
+  }
+  
+  polla<-polla*crops*13000
+  pollb<-pollb*crops*13000
+  
+  
+  
   # send output raster
-  stack(ra,rb)
+  stack(ra,rb ,polla, pollb)
 }

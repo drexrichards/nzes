@@ -33,7 +33,7 @@ nzes.pollination(
 \item{nectardemand}{Annual nectar requirement kg}
 }
 \value{
-Raster stack indicating the annual carrying capacity in colonies per pixel. Layer 1 is the more conservative estimate using all months  pollen to constrain. Layer 2 is using September as per Ausseil et al
+Raster stack indicating the annual carrying capacity in colonies per pixel and the annual pollinator density per cropped pixel. Layer 1+3 is the more conservative estimate using all months  pollen to constrain. Layer 2+4 is using September as per Ausseil et al
 }
 \description{
 This function models floral resources for honey bee pollinators, following Ausseil et al. 2018 Ecological Applications

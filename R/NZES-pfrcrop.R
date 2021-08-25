@@ -12,7 +12,7 @@ nzes.pfrcrop<- function(niwadd,
                         region,
          soils, 
          croprules){
-  
+  require(raster)
   fl<-list.files(niwadd)
   
   tmax2<- raster::brick(paste0(niwadd, fl[grep("Max", fl)]))
@@ -546,8 +546,6 @@ nzes.pfrcrop<- function(niwadd,
   )
   names(limitclim)<-c("precip","precip2", "lowtprob","hightprob")
   limitclim[limitclim==0]<-4
-  
-  
   
   potatoirri <- min(limitclim[[2:4]])
   potatonat <- min(limitclim)
