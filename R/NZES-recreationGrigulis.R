@@ -18,7 +18,10 @@ nzes.recreationGrigulis<- function(lcm,
                             protect,
                             access,
                             huts,
-                            touristspot){
+                            touristspot,
+                            agfactor,
+                            aesrecl,
+                            viewrecl){
   
   
   # Do zonal statistics

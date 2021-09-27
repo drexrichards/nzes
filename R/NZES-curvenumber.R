@@ -1,6 +1,6 @@
-#' Model an index of recreation based roughly on Karl's approach
+#' Model runoff following curve number method
 #'
-#' This function models an indicator of recreational opportunity spectrum
+#' This function models stormwater runoff using curve numbers
 #' @param curven Raster of curve number values between 0 and 100
 #' @param precip Raster of precipitation
 #' @return Raster indicating Q (stormwater runoff in mm)
