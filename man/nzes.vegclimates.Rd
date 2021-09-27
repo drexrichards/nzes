@@ -4,12 +4,10 @@
 \alias{nzes.vegclimates}
 \title{Crop suitability for 6 key crops based on rules developed by PFR}
 \usage{
-nzes.vegclimates(niwadd, region, reprojraster)
+nzes.vegclimates(niwadd, reprojraster)
 }
 \arguments{
 \item{niwadd}{Folder for source NIWA netcdfs}
-
-\item{region}{Cropping region as spatial polygons in wgs84}
 
 \item{reprojraster}{Raster of resolution needed for modelling, to force NIWA layers into}
 }

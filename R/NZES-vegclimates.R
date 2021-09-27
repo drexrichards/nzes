@@ -2,12 +2,10 @@
 #'
 #' This function models suitability for 6 crops under irrigated and non irrigated situations
 #' @param niwadd Folder for source NIWA netcdfs
-#' @param region Cropping region as spatial polygons in wgs84
 #' @param reprojraster Raster of resolution needed for modelling, to force NIWA layers into
 #' @return Named raster stack with 5 layers. 
 #' @export
 nzes.vegclimates<- function(niwadd,
-                            region,
                             reprojraster){
   require(raster)
   fl<-list.files(niwadd)
@@ -17,19 +15,19 @@ nzes.vegclimates<- function(niwadd,
   precip2<- raster::brick(paste0(niwadd, fl[grep("Precip", fl)]))
   pet<- raster::brick(paste0(niwadd, fl[grep("PE_VCSN", fl)]))
   
-  precip2<-raster::crop(precip2, region)
-  precip2<-raster::mask(precip2, region)
+  #precip2<-raster::crop(precip2, region)
+  #precip2<-raster::mask(precip2, region)
   
-  tmax2<-raster::crop(tmax2, region)
-  tmax2<-raster::mask(tmax2, region)
+  #tmax2<-raster::crop(tmax2, region)
+  #tmax2<-raster::mask(tmax2, region)
   tmax2<- tmax2 + -272.15
   
-  tmin2<-raster::crop(tmin2, region)
-  tmin2<-raster::mask(tmin2, region)
+  #tmin2<-raster::crop(tmin2, region)
+  #tmin2<-raster::mask(tmin2, region)
   tmin2<-tmin2+ -272.15
   
-  pet<-raster::crop(pet, region)
-  pet<-raster::mask(pet, region)
+  #pet<-raster::crop(pet, region)
+  #pet<-raster::mask(pet, region)
   
   # split into years
   spltyr<- function(stk){
