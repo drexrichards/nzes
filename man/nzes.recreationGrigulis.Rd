@@ -4,7 +4,17 @@
 \alias{nzes.recreationGrigulis}
 \title{Model an index of recreation based roughly on Karl's approach}
 \usage{
-nzes.recreationGrigulis(lcm, dem, protect, access, huts, touristspot)
+nzes.recreationGrigulis(
+  lcm,
+  dem,
+  protect,
+  access,
+  huts,
+  touristspot,
+  agfactor,
+  aesrecl,
+  viewrecl
+)
 }
 \arguments{
 \item{lcm}{Raster of land cover classes as integer}

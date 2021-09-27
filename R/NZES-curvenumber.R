@@ -17,16 +17,16 @@ P <- precip
       S <- 25400/CN - 254
   
       
-      PCHECK<- P > 0.2*S
+      PCHECK<- P > (0.2*S)
       
     
 
       Q1 <- ((P - 0.2*S)^2) / (P + 0.8*S)
       Q0 <- 0
       
-      PCHECK[PCHECK>0]<- Q1[PCHECK>0]
+      Q0[PCHECK==1]<- Q1[PCHECK==1]
     
     
-     round(Q1, 3)
+     round(Q0, 3)
     
 }

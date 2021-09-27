@@ -2,7 +2,7 @@
 % Please edit documentation in R/NZES-curvenumber.R
 \name{nzes.curvenumber}
 \alias{nzes.curvenumber}
-\title{Model an index of recreation based roughly on Karl's approach}
+\title{Model runoff following curve number method}
 \usage{
 nzes.curvenumber(curven, precip)
 }
@@ -15,5 +15,5 @@ nzes.curvenumber(curven, precip)
 Raster indicating Q (stormwater runoff in mm)
 }
 \description{
-This function models an indicator of recreational opportunity spectrum
+This function models stormwater runoff using curve numbers
 }
