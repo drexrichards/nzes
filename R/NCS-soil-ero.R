@@ -1,7 +1,7 @@
 #' Modelling of soil erosion protection by ecosystems
 #'
 #' This function models soil erosion
-#' @param lcm Land/ water cover map, including vegetation categories. Categories must follow Gaw et al. 2019, described in data(looktbl). Must be a raster with map units in metres.
+#' @param lcm Land/ water cover map
 #' @param R Rainfall erosivity (MJ/  mm / year). Can be either a raster or single value
 #' @param K Soil erodibility factor. Can be either a raster with K values for different land cover types or a single value
 #' @param LS Topographic factors. Must be a raster. Creating an LS raster is straightforward but computationally expensive in R, so a function is not given.

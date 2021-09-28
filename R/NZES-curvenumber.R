@@ -22,8 +22,8 @@ P <- precip
     
 
       Q1 <- ((P - 0.2*S)^2) / (P + 0.8*S)
-      Q0 <- 0
-      
+      Q0 <- PCHECK
+      Q0[,]<-0
       Q0[PCHECK==1]<- Q1[PCHECK==1]
     
     

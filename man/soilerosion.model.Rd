@@ -7,7 +7,7 @@
 soilerosion.model(lcm, R, K, LS, ndvi)
 }
 \arguments{
-\item{lcm}{Land/ water cover map, including vegetation categories. Categories must follow Gaw et al. 2019, described in data(looktbl). Must be a raster with map units in metres.}
+\item{lcm}{Land/ water cover map}
 
 \item{R}{Rainfall erosivity (MJ/  mm / year). Can be either a raster or single value}
 
