@@ -1,60 +1,82 @@
-#' Converter to move around files taken from NIWA climate change projetions and crop to an area of interest
+#' Extract key climate variables for hydrology, erosion, and stock unit carrying capacity models
 #'
-#' This function models soil erosion ecosystem services using the Guerra et al. approach but using NZUSLE as the model
-#' @param niwadd Folder directory for raw NIWA inputs including a max temp, mintemp, precip, and solar rad netcdf file
-#' @param newdd Folder directory for where to save raster
-#' @param foldname Name for new folder
-#' @param croparea SpatialPolygon areal extent in wgs84 to crop extent
-#' @return Folder will be filled with 4 new rasters
+#' This function is a helper to get useful layers from the NIWA archives
+#' @param niwadd Folder for source NIWA netcdfs
+#' @param reprojraster Raster of resolution needed for modelling, to force NIWA layers into
+#' @return Named raster stack with 4 layers. 
 #' @export
-
-niwaconverter<-function(niwadd, 
-                        newdd,
-                        foldname,
-                        croparea){
-  
+nzes.niwaconverter<- function(niwadd,
+                            reprojraster){
+  require(raster)
   fl<-list.files(niwadd)
   
-  # Netcdf dataset
-  #tmax<- nc_open("C:/Users/RichardsD/Documents/Offline data/NIWA climate offline/NorRpast-2005/MaxTempCorr_VCSN_NorESM1-M_2001-2005_RCPpast.nc")
-  tmax<- raster::brick(paste0(niwadd, fl[grep("Max", fl)]))
-  tmin<- raster::brick(paste0(niwadd, fl[grep("Min", fl)]))
-  rad<- raster::brick(paste0(niwadd, fl[grep("Rad", fl)]))
-  precip<- raster::brick(paste0(niwadd, fl[grep("Precip", fl)]))
-  pet<- raster::brick(paste0(niwadd, fl[grep("PE_VCSN", fl)]))
+  tmax2<- raster::brick(paste0(niwadd, fl[grep("Max", fl)]))
+  tmin2<- raster::brick(paste0(niwadd, fl[grep("Min", fl)]))
+  precip2<- raster::brick(paste0(niwadd, fl[grep("Precip", fl)]))
   
-  # temp units are in kelvin
-  # precip in mm
-  # radiation in w per m2
   
-  precip<-raster::crop(precip, croparea)
-  precip<-raster::mask(precip, croparea)
+  #precip2<-raster::crop(precip2, region)
+  #precip2<-raster::mask(precip2, region)
   
-  tmax<-raster::crop(tmax, croparea)
-  tmax<-raster::mask(tmax, croparea)
-  tmax<- tmax + -272.15
+  #tmax2<-raster::crop(tmax2, region)
+  #tmax2<-raster::mask(tmax2, region)
+  tmax2<- tmax2 + -272.15
   
-  tmin<-raster::crop(tmin, croparea)
-  tmin<-raster::mask(tmin, croparea)
-  tmin<-tmin+ -272.15
+  #tmin2<-raster::crop(tmin2, region)
+  #tmin2<-raster::mask(tmin2, region)
+  tmin2<-tmin2+ -272.15
   
-  rad<-raster::crop(rad, croparea)
-  rad<-raster::mask(rad, croparea)
+  #pet<-raster::crop(pet, region)
+  #pet<-raster::mask(pet, region)
   
-  pet<-raster::crop(pet, croparea)
-  pet<-raster::mask(pet, croparea)
+  # split into years
+  spltyr<- function(stk){
+    
+    yi<- rbind(seq(from = 1, to = raster::nlayers(stk), length.out=  ceiling(raster::nlayers(stk)/365)),
+               seq(from = 1, to = raster::nlayers(stk), length.out=  ceiling(raster::nlayers(stk)/365))-1)
+    yi[2, 1:(ncol(yi)-1)] <-  yi[2, 2:ncol(yi)]
+    yi<-yi[,1:(ncol(yi)-1)]
+    
+    stk2<-list(ncol(yi))
+    
+    for(i in 1:ncol(yi)){
+      stk2[[i]]<- stk[[yi[1,i] : yi[2,i] ]]
+    }
+    stk2
+  }
   
-  # creat folder and save out
-  dir.create(paste0(newdd,foldname))
-  raster::writeRaster(tmax,
-              paste0(newdd,foldname,"/tmax.nc"), overwrite =T,varname="time2", format="CDF")
-  raster::writeRaster(tmin,
-              paste0(newdd,foldname,"/tmin.nc"), overwrite =T,varname="time2", format="CDF")
-  raster::writeRaster(rad,
-              paste0(newdd,foldname,"/rad.nc"), overwrite =T,varname="time2", format="CDF")
-  raster::writeRaster(precip,
-              paste0(newdd,foldname,"/precip.nc"), overwrite =T,varname="time2", format="CDF")
-  raster::writeRaster(pet,
-              paste0(newdd,foldname,"/pet.nc"), overwrite =T,varname="time2", format="CDF")
+  tmax<-spltyr(tmax2)
+  tmin<-spltyr(tmin2)
+  precip<-spltyr(precip2)
+
   
+  # Create
+  # average annual temperature
+  p1<-tmin
+  for(j in 1:length(tmin)){
+    
+    fg<-(tmin[[j]]+tmax[[j]])/2
+    fg<- mean(fg,na.rm=TRUE)
+    p1[[j]]<- fg 
+  }
+  p1 <-do.call(mean, p1)
+  
+  # Total annual precipitation
+  p2<-tmin
+  for(j in 1:length(tmin)){
+    
+    fg<-(precip[[j]])
+    fg<- sum(fg,na.rm=TRUE)
+    p2[[j]]<- fg 
+  }
+  p2 <-do.call(mean, p2)
+  
+  # Large storm event 1 in 10 year
+  p3<- raster::calc(precip2, function(x){quantile(x, 0.99, na.rm=T)})
+  
+  ocro <-stack(p1,p2,p3,p4,p5)
+  names(ocro)<-c("meant","tap","highprecip")
+  ocro<-raster::projectRaster(ocro,reprojraster)
+  #ocro<-raster::resample(ocro, reprojraster,"ngb")
+  ocro
 }

@@ -1,6 +1,6 @@
-#' Crop suitability for 6 key crops based on rules developed by PFR
+#' Extract key climate variables for MAXENT and other modelling, from NIWA archive
 #'
-#' This function models suitability for 6 crops under irrigated and non irrigated situations
+#' This function is a helper to get useful layers from the NIWA archives
 #' @param niwadd Folder for source NIWA netcdfs
 #' @param reprojraster Raster of resolution needed for modelling, to force NIWA layers into
 #' @return Named raster stack with 5 layers. 
