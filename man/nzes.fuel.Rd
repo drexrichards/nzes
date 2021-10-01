@@ -4,7 +4,7 @@
 \alias{nzes.fuel}
 \title{Wildfire fuel map based on land cover and veg height and BUI data}
 \usage{
-nzes.fuel(BUI, lcm, vegheight, fueltable, fuelconverter)
+nzes.fuel(BUI, lcm, vegheight, irri, grazing, fueltable, fuelconverter)
 }
 \arguments{
 \item{BUI}{Raster of BUI from nzes.wildfire}
@@ -12,6 +12,10 @@ nzes.fuel(BUI, lcm, vegheight, fueltable, fuelconverter)
 \item{lcm}{Land/ water cover map, including vegetation categories.}
 
 \item{vegheight}{Raster of vegetation height in m}
+
+\item{irri}{Raster of irrigated area in binary}
+
+\item{grazing}{Raster of grazed area in binary}
 
 \item{fueltable}{Lookup table of fuel loads}
 

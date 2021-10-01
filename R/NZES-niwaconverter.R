@@ -74,7 +74,7 @@ nzes.niwaconverter<- function(niwadd,
   # Large storm event 1 in 10 year
   p3<- raster::calc(precip2, function(x){quantile(x, 0.99, na.rm=T)})
   
-  ocro <-stack(p1,p2,p3,p4,p5)
+  ocro <-stack(p1,p2,p3)
   names(ocro)<-c("meant","tap","highprecip")
   ocro<-raster::projectRaster(ocro,reprojraster)
   #ocro<-raster::resample(ocro, reprojraster,"ngb")

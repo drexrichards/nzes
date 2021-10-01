@@ -4,6 +4,8 @@
 #' @param BUI Raster of BUI from nzes.wildfire
 #' @param lcm Land/ water cover map, including vegetation categories. 
 #' @param vegheight Raster of vegetation height in m
+#' @param irri Raster of irrigated area in binary
+#' @param grazing Raster of grazed area in binary
 #' @param fueltable Lookup table of fuel loads
 #' @param fuelconverter Lookup table to reclasify lcdb to fuel types in fueltable
 #' @return Raster indicating fuel load
@@ -12,11 +14,21 @@
 nzes.fuel<- function(BUI,
                      lcm,
                      vegheight,
+                     irri,
+                     grazing,
                      fueltable,
                      fuelconverter){
   
   #### 1. Reclassify fuels index ####
   fu <- raster::reclassify(lcm,fuelconverter)
+  
+  # Add irigated and grazed values
+  fu[lcm %in% c(40,41) & grazing ==1]<- 6.1
+  fu[lcm %in% c(43,44) & grazing ==0]<- 8.1
+  # make irrigated have a small fuel load
+  fu[irri == 1]<-1
+  vegheight[irri==1]<-0.2
+  
   fui<- unique(fu)
   
   BUI<-raster::resample(BUI,lcm, "ngb")
