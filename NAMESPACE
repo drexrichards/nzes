@@ -3,6 +3,7 @@
 export(nzes.carrying.m1)
 export(nzes.carrying.m2)
 export(nzes.crop)
+export(nzes.crop.monthly)
 export(nzes.curvenumber)
 export(nzes.farminnovation)
 export(nzes.fate.converter)
