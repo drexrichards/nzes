@@ -2,14 +2,16 @@
 #'
 #' This function models suitability for crops using the rules in ECOCROP
 #' @param crop Scientific name of the crop for searching ECOCROP 
-#' @param tn Raster of mean temperature 
-#' @param tx Raster of max temperature 
+#' @param tk Raster of min temperature 
+#' @param tn Raster of min average temperature 
+#' @param tx Raster of mac average temperature 
 #' @param pr Stack of monthly precipitation
 #' @param soils Stack of soils with parameters "ph", "salinity", "prd"(depth) from the NZ soil dataset
 #' @return Raster indicating suitability (binary) for the crop or not
 #' @export
 
 nzes.crop<- function(crop,
+                     tk,
                      tn,
                      tx,
                      pr,
@@ -25,7 +27,7 @@ nzes.crop<- function(crop,
   g1<- ceiling(cropT$GMIN/31) #number of months needed
   #cropT$GMAX
   
-  # min and max temperature
+  # min and max temperature based on average
   t1<- tn > cropT$TMIN &
     tx < cropT$TMAX
   
@@ -51,7 +53,7 @@ nzes.crop<- function(crop,
   #p1<- pr> sx
   
   # kill temp
-  t2<- (tn > cropT$KTMP)
+  t2<- (tk > cropT$KTMP)
   
   # PH
   s1<- soils$ph > cropT$PHMIN & soils$ph < cropT$PHMAX

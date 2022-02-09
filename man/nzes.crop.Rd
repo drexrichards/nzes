@@ -4,14 +4,16 @@
 \alias{nzes.crop}
 \title{Model suitability for a crop based on climate and other parameters}
 \usage{
-nzes.crop(crop, tn, tx, pr, soils)
+nzes.crop(crop, tk, tn, tx, pr, soils)
 }
 \arguments{
 \item{crop}{Scientific name of the crop for searching ECOCROP}
 
-\item{tn}{Raster of mean temperature}
+\item{tk}{Raster of min temperature}
 
-\item{tx}{Raster of max temperature}
+\item{tn}{Raster of min average temperature}
+
+\item{tx}{Raster of mac average temperature}
 
 \item{pr}{Stack of monthly precipitation}
 
