@@ -45,6 +45,7 @@ nzes.crop<- function(crop,
   
   #Sys.time()
   pr2 <- raster::calc(pr, rollsum2)
+  #pr2<-max(pr2)
   #Sys.time()
   
   # If too slow, use a simpler metric 
@@ -91,7 +92,9 @@ nzes.crop<- function(crop,
   #collapse to months
   
   #irrigates
-  o1i <- (t1+t2)==2
+  pr3<-pr2
+  pr3[,]<-1
+  o1i <- (t1+t2+pr3)==3
   
   o1<- raster::calc(o1,
             function(x,na.rm=T) {
