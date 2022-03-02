@@ -79,7 +79,7 @@ nzes.tussockview<- function(lcm,
   for(i in 1:length(dem4[,4])){
     
     dem4[i,4]<- mean((viewTo(dem2, dem3[i,1:2], dem3[,1:2], 2, 0) * 
-      lcm3$layer),na.rm=T)
+      lcm3[,3]),na.rm=T)
   }
   
   dem5<- raster::rasterize(dem4[,1:2], dem2, dem4[,4] )
